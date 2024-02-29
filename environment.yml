@@ -1,10 +1,8 @@
 name: pww3
 dependencies:
-  - python=3.10.13
+  - python=3.10
   - numpy
   - streamlit
-  - conda-forge::mordred
-  - conda-forge::rdkit
   - pip
   - pip:
     - rdkit
