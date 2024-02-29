@@ -1,8 +1,11 @@
-name: stats
+name: pww3
 dependencies:
+  - python=3.10.13
   - numpy
   - streamlit
-  - rdkit
-  - mordred
-  - python-javabridge
-  - python-weka-wrapper3
+  - pip
+  - pip:
+    - rdkit
+    - mordred
+    - python-javabridge
+    - python-weka-wrapper3
