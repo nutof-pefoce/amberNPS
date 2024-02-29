@@ -3,6 +3,8 @@ dependencies:
   - python=3.10.13
   - numpy
   - streamlit
+  - conda-forge::mordred
+  - conda-forge::rdkit
   - pip
   - pip:
     - rdkit
