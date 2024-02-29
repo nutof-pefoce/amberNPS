@@ -1,5 +1,5 @@
-numpy
+streamlit
 rdkit
 mordred
-python-javabridge (>= 4.0.0)
+python-javabridge=4.0.0
 python-weka-wrapper3
