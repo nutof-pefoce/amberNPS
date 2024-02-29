@@ -1,5 +1,5 @@
-numpy==1.22.3
+numpy
 rdkit
 mordred
-python-javabridge==4.0.0
+python-javabridge
 python-weka-wrapper3
