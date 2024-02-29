@@ -1,0 +1,8 @@
+name: stats
+dependencies:
+  - numpy
+  - streamlit
+  - rdkit
+  - mordred
+  - python-javabridge
+  - python-weka-wrapper3
