@@ -1,4 +1,4 @@
-streamlit
+numpy==1.22.3
 rdkit
 mordred
 python-javabridge==4.0.0
