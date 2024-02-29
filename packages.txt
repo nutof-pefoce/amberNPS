@@ -1,3 +1,4 @@
 build-essential
 openjdk-11-jdk
 default-jdk
+python3-numpy
