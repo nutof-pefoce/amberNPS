@@ -2,3 +2,4 @@ python-javabridge (>= 4.0.0)
 python-weka-wrapper3
 rdkit
 mordred
+numpy
