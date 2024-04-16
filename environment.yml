@@ -2,7 +2,7 @@ name: pww3
 dependencies:
   - python=3.10
   - numpy
-  - streamlit=1.31.0
+  - streamlit==1.31.0
   - pip
   - pip:
     - rdkit
