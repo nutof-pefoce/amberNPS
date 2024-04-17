@@ -53,14 +53,14 @@ def weka_process(results_queue):
     data.class_is_last()
 
     ## train classifier
-    #cls = Classifier(classname="weka.classifiers.functions.LinearRegression")
+    cls = Classifier(classname="weka.classifiers.functions.LinearRegression")
     #cls.build_classifier(data)
 
     ## save model
     #cls.serialize(model_file, header=data)
 
     # load model
-    model, header = Classifier.deserialize(model_file)
+    model, header = cls.deserialize(model_file)
 
     values = result_list 
     inst = Instance.create_instance(values, weight=1.0)
