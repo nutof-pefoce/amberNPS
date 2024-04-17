@@ -46,14 +46,14 @@ def weka_process(results_queue):
     inst2.dataset = data
 
     data_file = "QSAR_NPS_training_set_v.2.csv"
-    model_file = "LR_QSAR_NPS_v.2.model"
+    model_file = "MLPReg_QSAR_NPS_v.2.model"
 
     # load
     data = load_any_file(data_file)
     data.class_is_last()
 
     ## train classifier
-    cls = Classifier(classname="weka.classifiers.functions.LinearRegression")
+    cls = Classifier(classname="weka.classifiers.functions.MLPRegressor")
     #cls.build_classifier(data)
 
     ## save model
