@@ -94,10 +94,10 @@ if __name__ == "__main__":
         with col2:
             go = st.form_submit_button("Calculate")        
         
-    mol = Chem.MolFromSmiles(smi)
-    img = Draw.MolToImage(mol)
+    
     if go:
-        
+        mol = Chem.MolFromSmiles(smi)
+        img = Draw.MolToImage(mol)
         ## MORDRED CALCs
         # Create empty Calculator instance
         calc1 = Calculator()
