@@ -96,7 +96,7 @@ if __name__ == "__main__":
         
     mol = Chem.MolFromSmiles(smi)
     img = Draw.MolToImage(mol)
-    if smi or go:
+    if go:
         
         ## MORDRED CALCs
         # Create empty Calculator instance
