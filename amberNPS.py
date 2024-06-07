@@ -193,10 +193,11 @@ if __name__ == "__main__":
         lower_range, upper_range = calculate_range_around_pLBC(pLBC)
         
         st.info(f"Assigned classification: {clsf}")
-        if LBC > 1000:
-            st.success(f"Predicted lethal blood concentration range: {round(lower_range / 1000, 2)} to {round(upper_range / 1000, 2)} μg/mL")
-        else:
-            st.success(f"Predicted lethal blood concentration range: {round(lower_range, 2)} to {round(upper_range, 2)} ng/mL")
+        st.success(f"Predicted lethal blood concentration range: {pLBC}")
+        ###if LBC > 1000:
+            ###st.success(f"Predicted lethal blood concentration range: {round(lower_range / 1000, 2)} to {round(upper_range / 1000, 2)} μg/mL")
+        ###else:
+            ###st.success(f"Predicted lethal blood concentration range: {round(lower_range, 2)} to {round(upper_range, 2)} ng/mL")
         
         col4, col5 = st.columns([5, 12])        
         with col5:
