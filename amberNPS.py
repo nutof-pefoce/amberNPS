@@ -8,9 +8,6 @@ from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, E
 
 import streamlit as st
 
-example_list = ["CC(C(=O)C1=CC=CC=C1)N2CC3C(C2)OCO3","CCCCCN1C=C(C2=CC=CC=C21)C(=O)CC3=CC=CC=C3C","CC1=NN=C2N1C3=C(C=C(S3)Br)C(=NC2)C4=CC=CC=C4Cl","CCC1=CC(=C(C=C1OC)CCNCC2=CC=CC=C2OC)OC"]
-example = random.choice(example_list)
-
 def weka_process(results_queue):
     import weka.core.jvm as jvm
     jvm.start(packages=True, auto_install=True)
@@ -88,7 +85,7 @@ if __name__ == "__main__":
     
     with st.form('SMILES_input_form'):
 
-        smi = st.text_input('Enter SMILES',value=example)
+        smi = st.text_input('Enter SMILES')
         st.caption("We recommend using Canonical SMILES available at [PubChem](https://pubchem.ncbi.nlm.nih.gov/)")
         
         col1, col2 = st.columns([9, 13])
