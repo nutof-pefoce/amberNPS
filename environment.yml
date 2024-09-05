@@ -5,6 +5,6 @@ dependencies:
   - pip
   - pip:
     - rdkit
-    - mordred
+    - mordredcommunity
     - python-javabridge
     - python-weka-wrapper3
