@@ -2,9 +2,9 @@ name: pww3
 dependencies:
   - python=3.10
   - numpy
+  - rdkit
   - pip
   - pip:
-    - rdkit
     - mordredcommunity
     - python-javabridge
     - python-weka-wrapper3
