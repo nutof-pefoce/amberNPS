@@ -1,6 +1,7 @@
 import math
 import random
 import concurrent.futures
+import atexit
 
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -22,6 +23,9 @@ def stop_jvm():
     import weka.core.jvm as jvm
     if jvm.started:
         jvm.stop()
+
+# Register the JVM stop function to run when the script exits
+atexit.register(stop_jvm)
 
 def weka_process(result1, result2):
     from weka.core.converters import load_any_file
@@ -76,9 +80,6 @@ def weka_process(result1, result2):
 
 # Start the JVM at the beginning
 start_jvm()
-
-# Register the shutdown event to stop the JVM when the session ends
-st.on_event("shutdown", stop_jvm)
 
 if __name__ == "__main__":
     st.title(':red[amber]NPS :drop_of_blood:')
