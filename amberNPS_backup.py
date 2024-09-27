@@ -155,7 +155,7 @@ if __name__ == "__main__":
         #weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
         
         weka_process()   
-        jvm.stop()
+    jvm.stop()
         
         # Wait for the Weka process to finish
         with st.spinner('Operation in progress'):
