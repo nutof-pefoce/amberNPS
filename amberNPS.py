@@ -1,5 +1,5 @@
 import math
-import random, multiprocessing
+import multiprocessing
 
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -8,15 +8,13 @@ from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, E
 
 import streamlit as st
 
-import weka.core.jvm as jvm
-jvm.start(packages=True, auto_install=True)
-import weka.core.packages as packages
-from weka.core.converters import load_any_file
-from weka.classifiers import Classifier
-from weka.core.dataset import Instance, missing_value
-
-##def weka_process(results_queue):
-def weka_process():
+def weka_process(results_queue):
+    import weka.core.jvm as jvm
+    jvm.start(packages=True, autoinstall=True)
+    import weka.core.packages as packages
+    from weka.core.converters import load_any_file
+    from weka.classifiers import Classifier
+    from weka.core.dataset import Instance, missing_value
 
     ## Class assignment task
     
@@ -55,14 +53,14 @@ def weka_process():
     data.class_is_last()
 
     ## train classifier
-    cls = Classifier(classname="weka.classifiers.functions.MLPRegressor")
+    #cls = Classifier(classname="weka.classifiers.functions.MLPRegressor")
     #cls.build_classifier(data)
 
     ## save model
     #cls.serialize(model_file, header=data)
 
     # load model
-    model, header = cls.deserialize(model_file)
+    model, header = Classifier.deserialize(model_file)
 
     values = result_list 
     inst = Instance.create_instance(values, weight=1.0)
@@ -71,23 +69,22 @@ def weka_process():
     # make prediction for new instance
     pLBC = model.classify_instance(inst)
 
-    
+    jvm.stop()
     
     # Obtain results from Weka-related code...
-    #weka_result = clsf, pLBC 
+    weka_result = clsf, pLBC 
 
     # Put the result in the queue
-    ##results_queue.put(weka_result) 
+    results_queue.put(weka_result) 
       
 if __name__ == "__main__":
     
     st.title(':red[amber]NPS :drop_of_blood:')
     st.subheader('A QSAR-based app for the prediction of lethal blood concentration of New Psychoactive Substances', divider='red')
     
-    
     with st.form('SMILES_input_form'):
-
-        smi = st.text_input('Enter SMILES')
+    
+        smi = st.text_input('Enter SMILES',placeholder='example: CC(CC1=CC=CC=C1)N')
         st.caption("We recommend using Canonical SMILES available at [PubChem](https://pubchem.ncbi.nlm.nih.gov/)")
         
         col1, col2 = st.columns([9, 13])
@@ -95,11 +92,10 @@ if __name__ == "__main__":
         with col2:
             go = st.form_submit_button("Calculate")        
         
-    
-    if go:
+    mol = Chem.MolFromSmiles(smi)
+    img = Draw.MolToImage(mol)
+    if smi or go:
         
-        mol = Chem.MolFromSmiles(smi)
-        img = Draw.MolToImage(mol)
         ## MORDRED CALCs
         # Create empty Calculator instance
         calc1 = Calculator()
@@ -149,38 +145,37 @@ if __name__ == "__main__":
         ## END of MORDRED CALCs
         
         # Create a Queue for inter-process communication
-        ##results_queue = multiprocessing.Queue()
+        results_queue = multiprocessing.Queue()
         
         # Start the Weka-related process
-        #weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
+        weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
         
-        weka_process()   
-  jvm.stop()
-        
+        weka_proc.start()   
+
         # Wait for the Weka process to finish
         with st.spinner('Operation in progress'):
-            weka_process()
+            weka_proc.join()
         
         
         # Retrieve the result from the queue
-        #weka_result = results_queue.get()
+        weka_result = results_queue.get()
 
         # Continue processing the result or displaying it in the Streamlit app
-#clsf, pLBC = weka_result
+        clsf, pLBC = weka_result
         
         
-def convert_pLBC_to_LBC(pLBC):
+        def convert_pLBC_to_LBC(pLBC):
             LBCmol = 10 ** -pLBC
             LBC = LBCmol * mw
             return LBC
 
-def calculate_range_around_pLBC(pLBC):
-        if clsf == "Cannabinoids" or clsf == "Benzodiazepines": 
-            diff = 0.57
-        elif clsf == "Phenethylamines" or clsf == "Opioids" or clsf == "Cathinones":
-            diff = 0.75
-        else:
-            diff = 0.75
+        def calculate_range_around_pLBC(pLBC):
+            if clsf == "Cannabinoids" or clsf == "Benzodiazepines": 
+                diff = 0.57
+            elif clsf == "Phenethylamines" or clsf == "Opioids" or clsf == "Cathinones":
+                diff = 0.75
+            else:
+                diff = 0.75
             lower_pLBC = pLBC - diff
             upper_pLBC = pLBC + diff
             lower_LBC = convert_pLBC_to_LBC(upper_pLBC) 
@@ -196,7 +191,6 @@ def calculate_range_around_pLBC(pLBC):
         lower_range, upper_range = calculate_range_around_pLBC(pLBC)
         
         st.info(f"Assigned classification: {clsf}")
-        st.success(f"Predicted pLBC: {round(pLBC, 4)}")
         if LBC > 1000:
             st.success(f"Predicted lethal blood concentration range: {round(lower_range / 1000, 2)} to {round(upper_range / 1000, 2)} μg/mL")
         else:
@@ -206,6 +200,6 @@ def calculate_range_around_pLBC(pLBC):
         with col5:
             st.image(img, caption='Molecular structure')
         
-col6, col7 = st.columns([5, 11])
-with col7:
-    st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
+    col6, col7 = st.columns([5, 11])
+    with col7:
+        st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
