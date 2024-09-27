@@ -153,11 +153,11 @@ if __name__ == "__main__":
         # Start the Weka-related process
         #weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
         
-        weka_process.start()   
+        weka_process()   
 
         # Wait for the Weka process to finish
         with st.spinner('Operation in progress'):
-            weka_process.join()
+            weka_process()
         
         
         # Retrieve the result from the queue
