@@ -1,5 +1,3 @@
-import os
-os.kill(os.getpid(), 9)
 import math
 import random, multiprocessing
 
