@@ -167,18 +167,18 @@ jvm.stop()
 clsf, pLBC = weka_result
         
         
-        def convert_pLBC_to_LBC(pLBC):
+def convert_pLBC_to_LBC(pLBC):
             LBCmol = 10 ** -pLBC
             LBC = LBCmol * mw
             return LBC
 
-        def calculate_range_around_pLBC(pLBC):
-            if clsf == "Cannabinoids" or clsf == "Benzodiazepines": 
-                diff = 0.57
-            elif clsf == "Phenethylamines" or clsf == "Opioids" or clsf == "Cathinones":
-                diff = 0.75
-            else:
-                diff = 0.75
+def calculate_range_around_pLBC(pLBC):
+        if clsf == "Cannabinoids" or clsf == "Benzodiazepines": 
+            diff = 0.57
+        elif clsf == "Phenethylamines" or clsf == "Opioids" or clsf == "Cathinones":
+            diff = 0.75
+        else:
+            diff = 0.75
             lower_pLBC = pLBC - diff
             upper_pLBC = pLBC + diff
             lower_LBC = convert_pLBC_to_LBC(upper_pLBC) 
