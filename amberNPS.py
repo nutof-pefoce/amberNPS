@@ -53,7 +53,7 @@ def weka_process(results_queue):
     data.class_is_last()
 
     ## train classifier
-    #cls = Classifier(classname="weka.classifiers.functions.MLPRegressor")
+    cls = Classifier(classname="weka.classifiers.functions.MLPRegressor")
     #cls.build_classifier(data)
 
     ## save model
