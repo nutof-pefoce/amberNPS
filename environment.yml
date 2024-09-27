@@ -6,4 +6,4 @@ dependencies:
     - mordredcommunity[full]
     - wheel
     - python-javabridge
-    - python-weka-wrapper3==0.2.16[plots,graphs]
+    - python-weka-wrapper3==0.2.16
