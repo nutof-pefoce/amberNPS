@@ -1,6 +1,6 @@
 import math
 import random
-import concurrent.futures  # No longer needed but kept in case of future use
+import concurrent.futures
 
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -11,20 +11,24 @@ import streamlit as st
 
 # Cache the JVM start function to ensure it's only initialized once
 @st.cache_resource
+def start_jvm():
+    import weka.core.jvm as jvm
+    if not jvm.started:
+        jvm.start(packages=True, auto_install=True)
+    return jvm
 
-import weka.core.jvm as jvm
-jvm.start(packages=True, auto_install=True)
-
+# Function to stop the JVM
+def stop_jvm():
+    import weka.core.jvm as jvm
+    if jvm.started:
+        jvm.stop()
 
 def weka_process(result1, result2):
-    # JVM is already started, no need to start it here
-    # Import Weka modules
     from weka.core.converters import load_any_file
     from weka.classifiers import Classifier
     from weka.core.dataset import Instance, missing_value
 
     ## Class assignment task
-
     data_file = "NPS_Class.arff"
     data = load_any_file(data_file)
     data.class_is_last()
@@ -44,7 +48,6 @@ def weka_process(result1, result2):
     clsf = inst1.class_attribute.value(int(pred))
 
     ## pLBC prediction task
-
     result_list = list(result2.values())
     result_list.append(missing_value())
 
@@ -69,12 +72,13 @@ def weka_process(result1, result2):
     # make prediction for new instance
     pLBC = model.classify_instance(inst)
 
-      
-    # Return the results instead of putting them in a queue
     return clsf, pLBC
 
 # Start the JVM at the beginning
 start_jvm()
+
+# Register the shutdown event to stop the JVM when the session ends
+st.on_event("shutdown", stop_jvm)
 
 if __name__ == "__main__":
     st.title(':red[amber]NPS :drop_of_blood:')
@@ -91,28 +95,27 @@ if __name__ == "__main__":
         mol = Chem.MolFromSmiles(smi)
         img = Draw.MolToImage(mol)
         ## MORDRED CALCs
-        # Create empty Calculator instance
         calc1 = Calculator()
         calc2 = Calculator()
 
         # GATS1s
-        calc1.register(Autocorrelation.GATS(1,'s'))
+        calc1.register(Autocorrelation.GATS(1, 's'))
         # nBase
         calc1.register(AcidBase.BasicGroupCount())
         # SsssN
-        calc1.register(EState.AtomTypeEState('sum','sssN'))
+        calc1.register(EState.AtomTypeEState('sum', 'sssN'))
         # SsOH
-        calc1.register(EState.AtomTypeEState('sum','sOH'))
+        calc1.register(EState.AtomTypeEState('sum', 'sOH'))
         # AATS5p
-        calc1.register(Autocorrelation.AATS (5, 'p'))
+        calc1.register(Autocorrelation.AATS(5, 'p'))
         # GATS4s
-        calc1.register(Autocorrelation.GATS (4, 's'))
+        calc1.register(Autocorrelation.GATS(4, 's'))
         # AATSC3s 
-        calc1.register(Autocorrelation.AATSC (3, 's'))
+        calc1.register(Autocorrelation.AATSC(3, 's'))
         # IC5
-        calc1.register(InformationContent.InformationContent (5))
+        calc1.register(InformationContent.InformationContent(5))
         # NsOH 
-        calc1.register(EState.AtomTypeEState('count','sOH'))
+        calc1.register(EState.AtomTypeEState('count', 'sOH'))
         # nRot 
         calc1.register(RotatableBond.RotatableBondsCount())
 
@@ -121,22 +124,20 @@ if __name__ == "__main__":
         # Register VR1_A
         calc2.register(AdjacencyMatrix.AdjacencyMatrix('VR1'))
         # Register AATS8Z
-        calc2.register(Autocorrelation.AATS (8, 'Z'))
+        calc2.register(Autocorrelation.AATS(8, 'Z'))
         # Register AATS3i
-        calc2.register(Autocorrelation.AATS (3, 'i'))
+        calc2.register(Autocorrelation.AATS(3, 'i'))
         # Register ATSC6s
-        calc2.register(Autocorrelation.ATSC (6, 's'))
+        calc2.register(Autocorrelation.ATSC(6, 's'))
         # Register ATSC2i
-        calc2.register(Autocorrelation.ATSC (2, 'i'))
+        calc2.register(Autocorrelation.ATSC(2, 'i'))
         # Register NdsN
-        calc2.register(EState.AtomTypeEState ('count', 'dsN'))
+        calc2.register(EState.AtomTypeEState('count', 'dsN'))
 
         result2 = calc2(mol)
 
         molweight = Weight.Weight(True, False)
         mw = molweight(mol)
-
-        ## END of MORDRED CALCs
 
         # Run the Weka-related function directly
         with st.spinner('Operation in progress'):
@@ -180,5 +181,3 @@ if __name__ == "__main__":
     col6, col7 = st.columns([5, 11])
     with col7:
         st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
-
-jvm.stop()
