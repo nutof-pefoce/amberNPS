@@ -11,9 +11,10 @@ import streamlit as st
 
 # Cache the JVM start function to ensure it's only initialized once
 @st.cache_resource
+
 import weka.core.jvm as jvm
 jvm.start(packages=True, auto_install=True)
-return jvm
+
 
 def weka_process(result1, result2):
     # JVM is already started, no need to start it here
