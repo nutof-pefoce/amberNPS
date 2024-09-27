@@ -8,10 +8,11 @@ from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, E
 
 import streamlit as st
 
+import weka.core.jvm as jvm
+    jvm.start(packages=True, auto_install=True)
+
 ##def weka_process(results_queue):
 def weka_process():
-    import weka.core.jvm as jvm
-    jvm.start(packages=True, auto_install=True)
     import weka.core.packages as packages
     from weka.core.converters import load_any_file
     from weka.classifiers import Classifier
