@@ -164,7 +164,7 @@ jvm.stop()
         #weka_result = results_queue.get()
 
         # Continue processing the result or displaying it in the Streamlit app
-    clsf, pLBC = weka_result
+clsf, pLBC = weka_result
         
         
         def convert_pLBC_to_LBC(pLBC):
