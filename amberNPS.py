@@ -204,6 +204,6 @@ def calculate_range_around_pLBC(pLBC):
         with col5:
             st.image(img, caption='Molecular structure')
         
-    col6, col7 = st.columns([5, 11])
-    with col7:
-        st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
+col6, col7 = st.columns([5, 11])
+with col7:
+    st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
