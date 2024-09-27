@@ -8,7 +8,8 @@ from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, E
 
 import streamlit as st
 
-def weka_process(results_queue):
+##def weka_process(results_queue):
+def weka_process():
     import weka.core.jvm as jvm
     jvm.start(packages=True, auto_install=True)
     import weka.core.packages as packages
@@ -75,7 +76,7 @@ def weka_process(results_queue):
     weka_result = clsf, pLBC 
 
     # Put the result in the queue
-    results_queue.put(weka_result) 
+    ##results_queue.put(weka_result) 
       
 if __name__ == "__main__":
     
@@ -147,20 +148,20 @@ if __name__ == "__main__":
         ## END of MORDRED CALCs
         
         # Create a Queue for inter-process communication
-        results_queue = multiprocessing.Queue()
+        ##results_queue = multiprocessing.Queue()
         
         # Start the Weka-related process
-        weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
+        #weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
         
-        weka_proc.start()   
+        weka_process.start()   
 
         # Wait for the Weka process to finish
         with st.spinner('Operation in progress'):
-            weka_proc.join()
+            weka_process.join()
         
         
         # Retrieve the result from the queue
-        weka_result = results_queue.get()
+        #weka_result = results_queue.get()
 
         # Continue processing the result or displaying it in the Streamlit app
         clsf, pLBC = weka_result
