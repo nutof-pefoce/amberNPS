@@ -58,6 +58,8 @@ def weka_process():
     # Make prediction for new instance
     pLBC = model.classify_instance(inst)
 
+    jvm.stop()
+    
     # Return results
     return clsf, pLBC
 
