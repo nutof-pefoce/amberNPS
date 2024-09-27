@@ -1,6 +1,5 @@
 name: pww3
 dependencies:
-  - python=3.10
   - numpy
   - pip
   - pip:
