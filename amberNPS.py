@@ -70,8 +70,7 @@ def weka_process(result1, result2):
     # make prediction for new instance
     pLBC = model.classify_instance(inst)
 
-    jvm.stop()
-    
+      
     # Return the results instead of putting them in a queue
     return clsf, pLBC
 
@@ -182,3 +181,5 @@ if __name__ == "__main__":
     col6, col7 = st.columns([5, 11])
     with col7:
         st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
+
+jvm.stop()
