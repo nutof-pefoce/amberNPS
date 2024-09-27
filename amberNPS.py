@@ -159,7 +159,7 @@ if __name__ == "__main__":
         # Wait for the Weka process to finish
         with st.spinner('Operation in progress'):
             weka_process()
-jvm.stop()
+    jvm.stop()
         
         # Retrieve the result from the queue
         #weka_result = results_queue.get()
