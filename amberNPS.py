@@ -10,9 +10,8 @@ import streamlit as st
 
 def weka_process(results_queue):
     import weka.core.jvm as jvm
-    jvm.start(packages=True, autoinstall=True)
-    from weka.core.packages import install_missing_package, install_missing_packages, LATEST
-    install_missing_package("multiLayerPerceptrons", stop_jvm_and_exit=False)
+    jvm.start(packages=True, auto_install=True)
+    import weka.core.packages as packages
     from weka.core.converters import load_any_file
     from weka.classifiers import Classifier
     from weka.core.dataset import Instance, missing_value
