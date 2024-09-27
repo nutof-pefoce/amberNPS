@@ -13,7 +13,7 @@ def weka_process(results_queue):
     jvm.start(packages=True)
     from weka.core.packages import install_missing_package, install_missing_packages, LATEST
     # installs a single package (if missing) and exits if installation occurred (outputs messages in console)
-    install_missing_package("multiLayerPerceptrons", stop_jvm_and_exit=True)
+    install_missing_package("multiLayerPerceptrons", stop_jvm_and_exit=False)
     from weka.core.converters import load_any_file
     from weka.classifiers import Classifier
     from weka.core.dataset import Instance, missing_value
