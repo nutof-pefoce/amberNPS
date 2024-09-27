@@ -74,7 +74,7 @@ def weka_process():
     
     
     # Obtain results from Weka-related code...
-    weka_result = clsf, pLBC 
+    #weka_result = clsf, pLBC 
 
     # Put the result in the queue
     ##results_queue.put(weka_result) 
@@ -165,7 +165,7 @@ if __name__ == "__main__":
         #weka_result = results_queue.get()
 
         # Continue processing the result or displaying it in the Streamlit app
-clsf, pLBC = weka_result
+#clsf, pLBC = weka_result
         
         
 def convert_pLBC_to_LBC(pLBC):
