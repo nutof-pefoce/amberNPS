@@ -2,6 +2,7 @@ import math
 import random
 import concurrent.futures
 import atexit
+import threading
 
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -18,10 +19,10 @@ def start_jvm():
         jvm.start(packages=True, auto_install=True)
     return jvm
 
-# Function to stop the JVM
+# Function to stop the JVM, ensuring it is done on the main thread
 def stop_jvm():
     import weka.core.jvm as jvm
-    if jvm.started:
+    if jvm.started and threading.current_thread() is threading.main_thread():
         jvm.stop()
 
 # Register the JVM stop function to run when the script exits
