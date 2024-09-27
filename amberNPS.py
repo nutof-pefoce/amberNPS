@@ -70,6 +70,8 @@ def weka_process(result1, result2):
     # make prediction for new instance
     pLBC = model.classify_instance(inst)
 
+    jvm.stop()
+    
     # Return the results instead of putting them in a queue
     return clsf, pLBC
 
