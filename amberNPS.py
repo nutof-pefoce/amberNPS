@@ -10,7 +10,7 @@ import streamlit as st
 
 def weka_process(results_queue):
     import weka.core.jvm as jvm
-    jvm.start(packages=True)
+    jvm.start()
     from weka.core.packages import install_missing_package, install_missing_packages, LATEST
     # installs a single package (if missing) and exits if installation occurred (outputs messages in console)
     install_missing_package("multiLayerPerceptrons", stop_jvm_and_exit=False)
