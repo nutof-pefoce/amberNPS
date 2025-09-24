@@ -3,6 +3,7 @@ dependencies:
   - numpy
   - pip
   - rdkit
+  - mordredcommunity[full]
   - pip:
     - mordredcommunity[full]
     - wheel
