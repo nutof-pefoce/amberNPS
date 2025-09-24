@@ -13,7 +13,6 @@ def install_java():
     st.success("Java installed and environment variables set.")
    
 install_java()
-
 import math
 import multiprocessing
 
