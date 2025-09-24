@@ -1,3 +1,19 @@
+import os
+import streamlit as st
+
+@st.cache_resource # or st.cache_data for older Streamlit versions
+def install_java():
+        # Example for downloading and extracting Java 11
+        # Adjust URL and extraction command for your specific OpenJDK version
+    os.system("wget -O /tmp/jdk.tar.gz https://download.java.net/java/GA/jdk11/97a06277a0664805b54194e43e74257c/12/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz")
+    os.system("mkdir -p /app/jdk")
+    os.system("tar -xzf /tmp/jdk.tar.gz -C /app/jdk --strip-components=1")
+    os.environ["JAVA_HOME"] = "/app/jdk"
+    os.environ["PATH"] = f"{os.environ['JAVA_HOME']}/bin:{os.environ['PATH']}"
+    st.success("Java installed and environment variables set.")
+   
+install_java()
+
 import math
 import multiprocessing
 
@@ -6,7 +22,7 @@ from rdkit.Chem import Draw
 
 from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, EState, AcidBase, InformationContent, RotatableBond, Weight
 
-import streamlit as st
+
 
 def weka_process(results_queue):
     import weka.core.jvm as jvm
