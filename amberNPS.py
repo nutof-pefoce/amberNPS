@@ -13,6 +13,8 @@ def install_java():
     st.success("Java installed and environment variables set.")
    
 install_java()
+!pip install mordredcommunity[full]
+
 import math
 import multiprocessing
 
