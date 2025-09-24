@@ -3,6 +3,7 @@ dependencies:
   - numpy
   - pip
   - pip:
+    - rdkit
     - mordredcommunity[full]
     - wheel
     - python-javabridge
