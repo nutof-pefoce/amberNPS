@@ -1,7 +1,7 @@
 name: pww3
 dependencies:
   - numpy
-  - pip
+  - pip3
   - rdkit
   - mordredcommunity[full]
   - pip:
