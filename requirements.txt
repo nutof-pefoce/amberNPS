@@ -1,6 +1,7 @@
 numpy
 rdkit
 mordredcommunity[full]
-setuptools wheel
+setuptools 
+wheel
 python-javabridge
 python-weka-wrapper3==0.2.16
