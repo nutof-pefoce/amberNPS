@@ -2,8 +2,8 @@ name: pww3
 dependencies:
   - numpy
   - pip
+  - rdkit
   - pip:
-    - rdkit
     - mordredcommunity[full]
     - wheel
     - python-javabridge
