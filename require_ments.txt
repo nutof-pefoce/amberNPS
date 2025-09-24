@@ -1,5 +1,5 @@
 numpy
 rdkit
-mordred
+mordredcommunity
 python-javabridge
 python-weka-wrapper3
