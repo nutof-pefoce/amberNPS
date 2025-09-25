@@ -3,6 +3,6 @@ rdkit
 mordredcommunity
 torch
 deepchem
-sklearn
+scikit-learn
 mhfp
 pandas
