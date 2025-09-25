@@ -1,7 +1,8 @@
 numpy
 rdkit
-mordredcommunity[full]
-setuptools 
-wheel
-python-javabridge
-python-weka-wrapper3==0.2.16
+mordredcommunity
+torch
+deepchem
+sklearn
+mhfp
+pandas
