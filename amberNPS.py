@@ -1,98 +1,25 @@
 import os
 import streamlit as st
 
-@st.cache_resource # or st.cache_data for older Streamlit versions
-def install_java():
-        # Example for downloading and extracting Java 11
-        # Adjust URL and extraction command for your specific OpenJDK version
-    os.system("sudo wget -O /tmp/jdk.tar.gz https://download.java.net/java/GA/jdk11/97a06277a0664805b54194e43e74257c/12/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz")
-    os.system("sudo mkdir -p /app/jdk")
-    os.system("sudo tar -xzf /tmp/jdk.tar.gz -C /app/jdk --strip-components=1")
-    os.environ["JAVA_HOME"] = "/app/jdk"
-    os.environ["PATH"] = f"{os.environ['JAVA_HOME']}/bin:{os.environ['PATH']}"
-    st.success("Java installed and environment variables set.")
-   
-install_java()
-
-
 import math
 import multiprocessing
 
+import os
+
+import random
+import pandas as pd
+import numpy as np
+import requests
+from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, EState, Weight
 from rdkit import Chem
-from rdkit.Chem import Draw
+from rdkit.Chem import AllChem, Draw
+from mhfp.encoder import MHFPEncoder
+import deepchem as dc
+from deepchem.models import MultitaskClassifier, MultitaskRegressor
+from deepchem.models.optimizers import Adam
+from deepchem.trans import BalancingTransformer
+from sklearn.preprocessing import LabelEncoder
 
-from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, EState, AcidBase, InformationContent, RotatableBond, Weight
-
-
-
-def weka_process(results_queue):
-    import weka.core.jvm as jvm
-    jvm.start(packages=True, auto_install=True)
-    import weka.core.packages as packages
-    from weka.core.converters import load_any_file
-    from weka.classifiers import Classifier
-    from weka.core.dataset import Instance, missing_value
-
-    ## Class assignment task
-    
-    data_file = "NPS_Class.arff"
-    data = load_any_file(data_file)
-    data.class_is_last()
-
-    cls = Classifier(classname="weka.classifiers.functions.SMO")
-    cls.build_classifier(data)
-
-    header = Classifier
-
-    values = list(result1.values())
-    values.append(missing_value())
-
-    inst1 = Instance.create_instance(values, weight=1.0)
-
-    inst1.dataset = data
-
-    pred = cls.classify_instance(inst1)
-    clsf = inst1.class_attribute.value(int(pred))
-    
-    ## pBLC prediction task
-
-    result_list = list(result2.values())
-    result_list.append(missing_value())
-
-    inst2 = Instance.create_instance(result_list, weight=1.0)
-    inst2.dataset = data
-
-    data_file = "QSAR_NPS_training_set_v.2.csv"
-    model_file = "MLPReg_QSAR_NPS_v.2.model"
-
-    # load
-    data = load_any_file(data_file)
-    data.class_is_last()
-
-    ## train classifier
-    cls = Classifier(classname="weka.classifiers.functions.MLPRegressor")
-    #cls.build_classifier(data)
-
-    ## save model
-    #cls.serialize(model_file, header=data)
-
-    # load model
-    model, header = Classifier.deserialize(model_file)
-
-    values = result_list 
-    inst = Instance.create_instance(values, weight=1.0)
-    inst.dataset = header
-
-    # make prediction for new instance
-    pLBC = model.classify_instance(inst)
-
-    jvm.stop()
-    
-    # Obtain results from Weka-related code...
-    weka_result = clsf, pLBC 
-
-    # Put the result in the queue
-    results_queue.put(weka_result) 
       
 if __name__ == "__main__":
     
@@ -108,110 +35,127 @@ if __name__ == "__main__":
         
         with col2:
             go = st.form_submit_button("Calculate")        
-        
+
+ 
+    class_dataset = pd.read_csv('nps_classification.csv')
+    amber_dataset = pd.read_csv('amber_nps.csv')
+    reg_dataset = pd.read_csv('TSS3.csv')
+
+    # Define the SMILES column and target columns
+    smiles_column_cf = class_dataset['SMILES']
+
+
+    le = LabelEncoder()
+    class_dataset['labels'] = le.fit_transform(class_dataset['DrugClass'])
+    labels = class_dataset['labels'].values
+
+    # Define the featurizer
+    mhfp_encoder = MHFPEncoder(n_permutations=4096, seed = 42)
+
+    # 1. Load CSV data using Pandas
+
+    X_fingerprints = np.array([mhfp_encoder.secfp_from_smiles(smi) for smi in smiles_column_cf], dtype=np.float32)
+
+    # Create a DeepPurpose dataset
+    cf_dataset = dc.data.NumpyDataset(X_fingerprints, y=labels)
+    balancer = BalancingTransformer(cf_dataset)
+    cf_dataset = balancer.transform(cf_dataset)
+
+    cf_model = MultitaskClassifier(n_tasks=1, n_classes=13, n_features=2048, layer_sizes=[256], activation_fns='relu', dropouts=0.02, weight_decay_penalty=0.02)
+
+    cf_model.fit(cf_dataset, nb_epoch=75)
+
+
+    calc = Calculator()
+
+    # Register VR1_A
+    calc.register(AdjacencyMatrix.AdjacencyMatrix('VR1'))
+    # Register AATS8Z
+    calc.register(Autocorrelation.AATS (8, 'Z'))
+    # Register AATS3i
+    calc.register(Autocorrelation.AATS (3, 'i'))
+    # Register ATSC6s
+    calc.register(Autocorrelation.ATSC (6, 's'))
+    # Register ATSC2i
+    calc.register(Autocorrelation.ATSC (2, 'i'))
+    # Register NdsN
+    calc.register(EState.AtomTypeEState ('count', 'dsN'))
+          
+  
+    def MordredCalculator(smiles_column):
+        molecule = smiles_column.apply(Chem.MolFromSmiles)
+        result = calc.pandas(molecule)
+        return result
+
+    smiles_column = reg_dataset['SMILES']
+    targets = reg_dataset[['pLOLBC', 'pLBC50', 'pHOLBC']].values
+
+
+    #Descriptor calculation
+    descriptors = MordredCalculator(smiles_column)
+
+    #X_features = pd.concat([descriptors, encoded_df], axis=1)
+    X_features = descriptors
+    X_features = X_features.values
+
+    rg_dataset = dc.data.NumpyDataset(X_features, y=targets, ids=smiles_column)
+
+    rg_model = MultitaskRegressor(n_tasks=3, n_features=6, layer_sizes=[20,10], activation_fns='softplus', weight_decay_penalty=0.1)
+
+    rg_model.fit(rg_dataset, nb_epoch=600)
+
+
+
     mol = Chem.MolFromSmiles(smi)
     img = Draw.MolToImage(mol)
+
+
+
     if smi or go:
         
-        ## MORDRED CALCs
-        # Create empty Calculator instance
-        calc1 = Calculator()
-        calc2 = Calculator()
+        fingerprints = np.array([mhfp_encoder.secfp_from_smiles(smi)], dtype=np.float32)
 
-        # GATS1s
-        calc1.register(Autocorrelation.GATS(1,'s'))
-        # nBase
-        calc1.register(AcidBase.BasicGroupCount())
-        # SsssN
-        calc1.register(EState.AtomTypeEState('sum','sssN'))
-        #SsOH
-        calc1.register(EState.AtomTypeEState('sum','sOH'))
-        #AATS5p
-        calc1.register(Autocorrelation.AATS (5, 'p'))
-        #GATS4s
-        calc1.register(Autocorrelation.GATS (4, 's'))
-        #AATSC3s 
-        calc1.register(Autocorrelation.AATSC (3, 's'))
-        #IC5
-        calc1.register(InformationContent.InformationContent (5))
-        #NsOH 
-        calc1.register(EState.AtomTypeEState('count','sOH'))
-        #nRot 
-        calc1.register(RotatableBond.RotatableBondsCount())
+        # Make prediction using the trained model
+        prediction = cf_model.predict_on_batch(fingerprints)
 
-        result1 = calc1(mol)
+        # Get predicted class label (assuming it's a classification model)
+        predicted_class = np.argmax(prediction, axis=2).flatten()
 
-        # Register VR1_A
-        calc2.register(AdjacencyMatrix.AdjacencyMatrix('VR1'))
-        # Register AATS8Z
-        calc2.register(Autocorrelation.AATS (8, 'Z'))
-        # Register AATS3i
-        calc2.register(Autocorrelation.AATS (3, 'i'))
-        # Register ATSC6s
-        calc2.register(Autocorrelation.ATSC (6, 's'))
-        # Register ATSC2i
-        calc2.register(Autocorrelation.ATSC (2, 'i'))
-        # Register NdsN
-        calc2.register(EState.AtomTypeEState ('count', 'dsN'))
-                    
-        result2 = calc2(mol)
-        
+        # Decode the predicted class label if necessary (using le.inverse_transform)
+        predicted_class_name = le.inverse_transform([predicted_class][0])[0]
+
+        smiles_series = pd.Series(smi)
+
+        # Featurize the molecule
+        features = MordredCalculator(smiles_series)
+
+        # Make prediction using the trained model
+        prediction = model.predict_on_batch(features)
+
         molweight = Weight.Weight(True,False)
-        mw = molweight(mol)
-        
-        ## END of MORDRED CALCs
-        
-        # Create a Queue for inter-process communication
-        results_queue = multiprocessing.Queue()
-        
-        # Start the Weka-related process
-        weka_proc = multiprocessing.Process(target=weka_process, args=(results_queue,))
-        
-        weka_proc.start()   
+        mw = molweight(Chem.MolFromSmiles(smi))
+
+        def convert_pLBC_to_LBC(pLBC):
+                    LBCmol = 10 ** -pLBC
+                    LBC = LBCmol * mw
+                    return LBC
+
+        LOLBC = convert_pLBC_to_LBC(prediction[0][0][0])
+        HOLBC = convert_pLBC_to_LBC(prediction[0][2][0])
+        LBC50 = convert_pLBC_to_LBC(prediction[0][1][0])
 
         # Wait for the Weka process to finish
-        with st.spinner('Operation in progress'):
-            weka_proc.join()
+        #with st.spinner('Operation in progress'):
+            #weka_proc.join()
         
+            
+               
+        st.info(f"Assigned classification: {predicted_class_name}")
         
-        # Retrieve the result from the queue
-        weka_result = results_queue.get()
-
-        # Continue processing the result or displaying it in the Streamlit app
-        clsf, pLBC = weka_result
-        
-        
-        def convert_pLBC_to_LBC(pLBC):
-            LBCmol = 10 ** -pLBC
-            LBC = LBCmol * mw
-            return LBC
-
-        def calculate_range_around_pLBC(pLBC):
-            if clsf == "Cannabinoids" or clsf == "Benzodiazepines": 
-                diff = 0.57
-            elif clsf == "Phenethylamines" or clsf == "Opioids" or clsf == "Cathinones":
-                diff = 0.75
-            else:
-                diff = 0.75
-            lower_pLBC = pLBC - diff
-            upper_pLBC = pLBC + diff
-            lower_LBC = convert_pLBC_to_LBC(upper_pLBC) 
-            upper_LBC = convert_pLBC_to_LBC(lower_pLBC)
-            return lower_LBC, upper_LBC
-
-        # Convert pH to [H+]
-        LBC = convert_pLBC_to_LBC(pLBC)
-                
-        ## st.write(f"[LBC] for pLBC {pLBC}: {round(LBC, 4)}")
-
-        # Calculate range around pH +/- 1
-        lower_range, upper_range = calculate_range_around_pLBC(pLBC)
-        
-        st.info(f"Assigned classification: {clsf}")
         if LBC > 1000:
-            st.success(f"Predicted lethal blood concentration range: {round(lower_range / 1000, 2)} to {round(upper_range / 1000, 2)} μg/mL")
+            st.success(f"\n Predicted lethal blood concentration range: {LOLBC / 1000:.2f} to {HOLBC / 1000:.2f} μg/mL (median = {LBC50:.2f} μg/mL)")
         else:
-            st.success(f"Predicted lethal blood concentration range: {round(lower_range, 2)} to {round(upper_range, 2)} ng/mL")
+            st.success(f"\nPredicted lethal blood concentration range: {LOLBC:.2f} to {HOLBC:.2f} ng/mL (median = {LBC50:.2f} ng/mL)")
         
         col4, col5 = st.columns([5, 12])        
         with col5:
@@ -220,3 +164,4 @@ if __name__ == "__main__":
     col6, col7 = st.columns([5, 11])
     with col7:
         st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
+
