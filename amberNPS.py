@@ -15,10 +15,10 @@ from sklearn.preprocessing import LabelEncoder
 def load_models():
     # Load pre-trained models
     cf_model = dc.models.MultitaskClassifier(n_tasks=1, n_classes=13, n_features=2048, layer_sizes=[256])
-    cf_model.restore("cf_model_dir")
+    cf_model.restore(checkpoint="cf_model_dir/checkpoint1.pt")
 
     rg_model = dc.models.MultitaskRegressor(n_tasks=3, n_features=6, layer_sizes=[20,10])
-    rg_model.restore("rg_model_dir")
+    rg_model.restore(checkpoint="cf_model_dir/checkpoint1.pt")
     
     return cf_model, rg_model
 
