@@ -18,7 +18,7 @@ def load_models():
     cf_model.restore(checkpoint="cf_model_dir/checkpoint1.pt")
 
     rg_model = dc.models.MultitaskRegressor(n_tasks=3, n_features=6, layer_sizes=[20,10])
-    rg_model.restore(checkpoint="cf_model_dir/checkpoint1.pt")
+    rg_model.restore(checkpoint="rg_model_dir/checkpoint1.pt")
     
     return cf_model, rg_model
 
