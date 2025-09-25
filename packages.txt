@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 libxrender1
+=======
+libxrender1
+>>>>>>> 9fb59ae (Local changes and new files)

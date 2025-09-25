@@ -163,5 +163,9 @@ if __name__ == "__main__":
         
     col6, col7 = st.columns([5, 11])
     with col7:
+<<<<<<< HEAD
         st.caption('Proudly developed in Ceará 🌵, Brazil 🇧🇷')
 
+=======
+        st.caption('Proudly developed in Ceará 🌵, Brazil 🇧🇷')
+>>>>>>> 9fb59ae (Local changes and new files)
