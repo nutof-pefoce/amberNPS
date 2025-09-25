@@ -23,7 +23,7 @@ from sklearn.preprocessing import LabelEncoder
       
 if __name__ == "__main__":
     
-    st.title(':red[amber]NPS :drop_of_blood:')
+    st.title(':red[amber]NPS 🩸')
     st.subheader('A QSAR-based app for the prediction of lethal blood concentration of New Psychoactive Substances', divider='red')
     
     with st.form('SMILES_input_form'):
@@ -163,5 +163,5 @@ if __name__ == "__main__":
         
     col6, col7 = st.columns([5, 11])
     with col7:
-        st.caption('Proudly developed in Ceará :cactus:, Brazil :flag-br:')
+        st.caption('Proudly developed in Ceará 🌵, Brazil 🇧🇷')
 
