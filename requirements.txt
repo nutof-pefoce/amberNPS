@@ -5,8 +5,6 @@ torch
 deepchem
 scikit-learn
 mhfp
-<<<<<<< HEAD
 pandas
-=======
-pandas
->>>>>>> 9fb59ae (Local changes and new files)
+
+
