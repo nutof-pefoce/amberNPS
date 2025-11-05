@@ -106,6 +106,7 @@ def MordredCalculator(smi):
     calc.register(Weight.Weight(True,False))
     result = np.array(calc(mol))
     features = result[:-1]
+    features = features.reshape(1, -1)
     mw = result[-1]
     return features, mw
 
