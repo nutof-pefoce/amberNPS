@@ -11,20 +11,30 @@ from mordred import Calculator, descriptors, AdjacencyMatrix, Autocorrelation, E
 import streamlit as st
 
 @st.cache_resource
-with open('multitask_regressor.pkl', 'rb') as f:
-    mlp = pickle.load(f)
+def load_mlp():
+    with open('multitask_regressor.pkl', 'rb') as f:
+        return pickle.load(f)
 
 @st.cache_resource
-with open('scaler.pkl', 'rb') as f:
-    scaler = pickle.load(f)
-    
-@st.cache_resource
-with open('random_forest_model.pkl', 'rb') as f:
-    rf = pickle.load(f)
+def load_scaler():
+    with open('scaler.pkl', 'rb') as f:
+        return pickle.load(f)
 
 @st.cache_resource
-with open('label_encoder.pkl', 'rb') as f:
-    le = pickle.load(f)
+def load_rf():
+    with open('random_forest_model.pkl', 'rb') as f:
+        return pickle.load(f)
+
+@st.cache_resource
+def load_label_encoder():
+    with open('label_encoder.pkl', 'rb') as f:
+        return pickle.load(f)
+
+# Load cached resources
+mlp = load_mlp()
+scaler = load_scaler()
+rf = load_rf()
+le = load_label_encoder()
 
 @st.cache_resource
 def MACCS_Generator(smi):
