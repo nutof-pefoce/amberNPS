@@ -159,7 +159,7 @@ if smi or go:
     
     st.info(f"Assigned classification: {drug_class}")
     if LBC50 > 1000:
-        st.success(f"Predicted lethal blood concentration range: {LOLBC / 1000:.2f} to {HOLBC / 1000:.2f} μg/mL (median = {LBC50:.2f} μg/mL)")
+        st.success(f"Predicted lethal blood concentration range: {LOLBC / 1000:.2f} to {HOLBC / 1000:.2f} μg/mL (median = {LBC50 / 1000:.2f} μg/mL)")
     else:
         st.success(f"Predicted lethal blood concentration range: {LOLBC:.2f} to {HOLBC:.2f} ng/mL (median = {LBC50:.2f} ng/mL)")
     
