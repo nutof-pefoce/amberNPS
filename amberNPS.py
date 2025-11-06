@@ -136,6 +136,7 @@ if smi or go:
     ## MORDRED CALCs
     # Create empty Calculator instance
     features, mw = MordredCalculator(smi)
+    features = scaler.transform(features)
     maccs_keys = MACCS_Generator(smi)
     
     # Wait for the Weka process to finish
